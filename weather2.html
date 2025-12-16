@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherInfo - Your Weather Companion</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4a6cf7;
+            --secondary: #a777e3;
+            --dark: #333;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            color: var(--primary);
+            font-size: 24px;
+        }
+        
+        .logo span {
+            color: var(--secondary);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 20px;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        nav ul li a:hover, nav ul li a.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Page Styles */
+        .page {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* Home Page */
+        .hero {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .hero h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .hero p {
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 108, 247, 0.4);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(74, 108, 247, 0.6);
+        }
+        
+        .features {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+        
+        .feature {
+            flex: 1;
+            min-width: 250px;
+            margin: 15px;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+        
+        .feature i {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .feature h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        /* Weather Page */
+        .weather-search {
+            display: flex;
+            margin-bottom: 30px;
+        }
+        
+        .weather-search input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 16px;
+        }
+        
+        .weather-search button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .current-weather {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .weather-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .location h2 {
+            font-size: 28px;
+        }
+        
+        .date {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        
+        .weather-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .temperature {
+            font-size: 64px;
+            font-weight: 700;
+        }
+        
+        .weather-icon {
+            font-size: 80px;
+        }
+        
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .detail {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .forecast {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .forecast-day {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .forecast-date {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .forecast-icon {
+            font-size: 40px;
+            margin: 10px 0;
+            color: var(--primary);
+        }
+        
+        .forecast-temp {
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .forecast-high {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .forecast-low {
+            color: var(--gray);
+        }
+        
+        /* Form Styles */
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+            outline: none;
+        }
+        
+        .form-group .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            color: var(--gray);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .form-button {
+            width: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .form-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(74, 108, 247, 0.4);
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .divider span {
+            padding: 0 10px;
+            color: var(--gray);
+        }
+        
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .social-btn.google {
+            color: #db4437;
+        }
+        
+        .social-btn.facebook {
+            color: #4267B2;
+        }
+        
+        .social-btn.twitter {
+            color: #1DA1F2;
+        }
+        
+        .terms {
+            font-size: 14px;
+            color: var(--gray);
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .terms a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        /* Profile Page */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            margin-right: 20px;
+        }
+        
+        .profile-info h2 {
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .profile-info p {
+            color: var(--gray);
+        }
+        
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .detail-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .detail-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+        
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+        
+        .toast i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .toast.success i {
+            color: var(--success);
+        }
+        
+        .toast.error i {
+            color: var(--danger);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+            }
+            
+            nav ul {
+                margin-top: 15px;
+            }
+            
+            .features {
+                flex-direction: column;
+            }
+            
+            .weather-main {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .temperature {
+                margin: 20px 0;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-avatar {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Weather<span>Info</span></h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-page="home">Home</a></li>
+                        <li><a href="#" class="nav-link" data-page="weather">Weather</a></li>
+                        <li><a href="#" class="nav-link" data-page="profile">Profile</a></li>
+                        <li><a href="#" class="nav-link" data-page="login">Login</a></li>
+                        <li><a href="#" class="nav-link" data-page="signup">Sign Up</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        
+        <!-- Toast Notification -->
+        <div id="toast" class="toast">
+            <i class="fas fa-check-circle"></i>
+            <span id="toast-message">Success!</span>
+        </div>
+        
+        <!-- Home Page -->
+        <section id="home" class="page active">
+            <div class="hero">
+                <h2>Stay Ahead of the Weather</h2>
+                <p>Get accurate, real-time weather information for any location worldwide. Plan your day with confidence using our comprehensive weather forecasts.</p>
+                <a href="#" class="cta-button nav-link" data-page="weather">Check Weather Now</a>
+            </div>
+            
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-sun"></i>
+                    <h3>Current Conditions</h3>
+                    <p>Get real-time weather data including temperature, humidity, wind speed, and more.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>7-Day Forecast</h3>
+                    <p>Plan your week with our detailed 7-day weather forecast for any location.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-globe-americas"></i>
+                    <h3>Global Coverage</h3>
+                    <p>Access weather information for cities and towns all around the world.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Weather Page -->
+        <section id="weather" class="page">
+            <h2 style="margin-bottom: 20px; color: var(--primary);">Weather Forecast</h2>
+            <div class="weather-search">
+                <input type="text" id="location-input" placeholder="Enter city name...">
+                <button id="search-btn">Search</button>
+            </div>
+            
+            <div id="current-weather" class="current-weather">
+                <div class="weather-header">
+                    <div class="location">
+                        <h2 id="city-name">New York</h2>
+                        <div class="date" id="current-date">Monday, June 12, 2023</div>
+                    </div>
+                    <div class="condition" id="current-condition">Partly Cloudy</div>
+                </div>
+                
+                <div class="weather-main">
+                    <div class="temperature">
+                        <span id="current-temp">24</span>°C
+                    </div>
+                    <div class="weather-icon" id="weather-icon"><i class="fas fa-cloud-sun"></i></div>
+                </div>
+                
+                <div class="weather-details">
+                    <div class="detail">
+                        <div class="detail-label">Feels Like</div>
+                        <div class="detail-value" id="feels-like">26°C</div>
+                    </div>
+                    <div class="detail">
+                        <div class="detail-label">Humidity</div>
+                        <div class="detail-value" id="humidity">65%</div>
+                    </div>
+                    <div class="detail">
+                        <div class="detail-label">Wind</div>
+                        <div class="detail-value" id="wind-speed">12 km/h</div>
+                    </div>
+                    <div class="detail">
+                        <div class="detail-label">Pressure</div>
+                        <div class="detail-value" id="pressure">1015 hPa</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 style="margin: 30px 0 15px; color: var(--primary);">7-Day Forecast</h3>
+            <div id="forecast" class="forecast">
+                <!-- Forecast days will be inserted here by JavaScript -->
+            </div>
+        </section>
+        
+        <!-- Profile Page -->
+        <section id="profile" class="page">
+            <div class="profile-header">
+                <div class="profile-avatar">JS</div>
+                <div class="profile-info">
+                    <h2 id="profile-name">John Smith</h2>
+                    <p id="profile-email">john.smith@example.com</p>
+                </div>
+            </div>
+            
+            <div class="profile-details">
+                <div class="detail-card">
+                    <h3>Personal Information</h3>
+                    <p><strong>Email:</strong> <span id="profile-email-detail">john.smith@example.com</span></p>
+                    <p><strong>Location:</strong> <span id="profile-location">New York, USA</span></p>
+                    <p><strong>Phone:</strong> <span id="profile-phone">+1 (555) 123-4567</span></p>
+                </div>
+                
+                <div class="detail-card">
+                    <h3>Weather Preferences</h3>
+                    <p><strong>Default Location:</strong> <span id="profile-default-location">New York</span></p>
+                    <p><strong>Temperature Unit:</strong> <span id="profile-temp-unit">Celsius</span></p>
+                    <p><strong>Wind Speed Unit:</strong> <span id="profile-wind-unit">km/h</span></p>
+                </div>
+                
+                <div class="detail-card">
+                    <h3>Account Settings</h3>
+                    <p><strong>Membership:</strong> <span id="profile-membership">Premium</span></p>
+                    <p><strong>Notifications:</strong> <span id="profile-notifications">Enabled</span></p>
+                    <p><strong>Language:</strong> <span id="profile-language">English</span></p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Login Page -->
+        <section id="login" class="page">
+            <div class="form-container">
+                <h2 class="form-title">Login to Your Account</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" placeholder="Enter your email" required>
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password" required>
+                        <i class="fas fa-lock input-icon"></i>
+                        <span class="password-toggle" id="login-password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <input type="checkbox" id="remember-me">
+                            <label for="remember-me">Remember me</label>
+                        </div>
+                        <a href="#" style="color: var(--primary); text-decoration: none;">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="form-button">Login</button>
+                </form>
+                
+                <div class="divider">
+                    <span>Or continue with</span>
+                </div>
+                
+                <div class="social-login">
+                    <div class="social-btn google">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <div class="social-btn facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </div>
+                    <div class="social-btn twitter">
+                        <i class="fab fa-twitter"></i>
+                    </div>
+                </div>
+                
+                <div class="form-footer">
+                    <p>Don't have an account? <a href="#" class="nav-link" data-page="signup">Sign up here</a></p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sign Up Page -->
+        <section id="signup" class="page">
+            <div class="form-container">
+                <h2 class="form-title">Create an Account</h2>
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" placeholder="Enter your full name" required>
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email Address</label>
+                        <input type="email" id="signup-email" placeholder="Enter your email" required>
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" placeholder="Create a password" required>
+                        <i class="fas fa-lock input-icon"></i>
+                        <span class="password-toggle" id="signup-password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm">Confirm Password</label>
+                        <input type="password" id="signup-confirm" placeholder="Confirm your password" required>
+                        <i class="fas fa-lock input-icon"></i>
+                        <span class="password-toggle" id="signup-confirm-toggle">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="agree-terms" required>
+                        <label for="agree-terms">I agree to the <a href="#" style="color: var(--primary);">Terms of Service</a> and <a href="#" style="color: var(--primary);">Privacy Policy</a></label>
+                    </div>
+                    <button type="submit" class="form-button">Create Account</button>
+                </form>
+                
+                <div class="divider">
+                    <span>Or sign up with</span>
+                </div>
+                
+                <div class="social-login">
+                    <div class="social-btn google">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <div class="social-btn facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </div>
+                    <div class="social-btn twitter">
+                        <i class="fab fa-twitter"></i>
+                    </div>
+                </div>
+                
+                <div class="form-footer">
+                    <p>Already have an account? <a href="#" class="nav-link" data-page="login">Login here</a></p>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>&copy; 2023 WeatherInfo. All rights reserved. | Powered by WeatherAPI.com</p>
+        </footer>
+    </div>
+
+    <script>
+        // User data storage
+        let users = JSON.parse(localStorage.getItem('weatherUsers')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        
+        // Navigation between pages
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetPage = this.getAttribute('data-page');
+                
+                // Update active nav link
+                document.querySelectorAll('.nav-link').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Show target page
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                document.getElementById(targetPage).classList.add('active');
+                
+                // Update profile if user is logged in
+                if (currentUser && targetPage === 'profile') {
+                    updateProfilePage();
+                }
+            });
+        });
+        
+        // Update profile page with user data
+        function updateProfilePage() {
+            if (currentUser) {
+                document.getElementById('profile-name').textContent = currentUser.name;
+                document.getElementById('profile-email').textContent = currentUser.email;
+                document.getElementById('profile-email-detail').textContent = currentUser.email;
+                document.getElementById('profile-avatar').textContent = currentUser.name.split(' ').map(n => n[0]).join('');
+            }
+        }
+        
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.className = 'toast';
+            toast.classList.add(type);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Password toggle functionality
+        document.querySelectorAll('.password-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('input');
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+        
+        // Sign up form handling
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm').value;
+            const agreeTerms = document.getElementById('agree-terms').checked;
+            
+            // Validation
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match!', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters!', 'error');
+                return;
+            }
+            
+            if (!agreeTerms) {
+                showToast('You must agree to the terms and conditions!', 'error');
+                return;
+            }
+            
+            // Check if user already exists
+            if (users.find(user => user.email === email)) {
+                showToast('An account with this email already exists!', 'error');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: Date.now(),
+                name,
+                email,
+                password, // In a real app, this would be hashed
+                createdAt: new Date().toISOString()
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('weatherUsers', JSON.stringify(users));
+            
+            // Auto login after signup
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            showToast('Account created successfully!');
+            
+            // Redirect to profile page
+            setTimeout(() => {
+                document.querySelectorAll('.nav-link').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                document.querySelector('[data-page="profile"]').classList.add('active');
+                
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                document.getElementById('profile').classList.add('active');
+                
+                updateProfilePage();
+            }, 1500);
+        });
+        
+        // Login form handling
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+            
+            // Find user
+            const user = users.find(user => user.email === email && user.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                showToast('Login successful!');
+                
+                // Redirect to profile page
+                setTimeout(() => {
+                    document.querySelectorAll('.nav-link').forEach(nav => {
+                        nav.classList.remove('active');
+                    });
+                    document.querySelector('[data-page="profile"]').classList.add('active');
+                    
+                    document.querySelectorAll('.page').forEach(page => {
+                        page.classList.remove('active');
+                    });
+                    document.getElementById('profile').classList.add('active');
+                    
+                    updateProfilePage();
+                }, 1000);
+            } else {
+                showToast('Invalid email or password!', 'error');
+            }
+        });
+        
+        // Weather API functionality
+        const apiKey = 'e7a232db2cf544e993d60744250911';
+        
+        document.getElementById('search-btn').addEventListener('click', function() {
+            const location = document.getElementById('location-input').value || 'New York';
+            getWeatherData(location);
+        });
+        
+        // Default location on page load
+        window.addEventListener('load', function() {
+            getWeatherData('New York');
+        });
+        
+        function getWeatherData(location) {
+            // Show loading state
+            document.getElementById('current-weather').style.display = 'none';
+            
+            // Fetch current weather
+            fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}&aqi=no`)
+                .then(response => response.json())
+                .then(data => {
+                    displayCurrentWeather(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching current weather:', error);
+                    showToast('Error fetching weather data. Please try again.', 'error');
+                });
+            
+            // Fetch forecast
+            fetch(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${location}&days=7&aqi=no&alerts=no`)
+                .then(response => response.json())
+                .then(data => {
+                    displayForecast(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching forecast:', error);
+                });
+        }
+        
+        function displayCurrentWeather(data) {
+            const current = data.current;
+            const location = data.location;
+            
+            document.getElementById('city-name').textContent = location.name + ', ' + location.country;
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('current-condition').textContent = current.condition.text;
+            document.getElementById('current-temp').textContent = Math.round(current.temp_c);
+            document.getElementById('feels-like').textContent = Math.round(current.feelslike_c) + '°C';
+            document.getElementById('humidity').textContent = current.humidity + '%';
+            document.getElementById('wind-speed').textContent = current.wind_kph + ' km/h';
+            document.getElementById('pressure').textContent = current.pressure_mb + ' hPa';
+            
+            // Set weather icon based on condition
+            const condition = current.condition.text.toLowerCase();
+            let icon = 'fas fa-sun';
+            if (condition.includes('cloud')) icon = 'fas fa-cloud';
+            if (condition.includes('rain')) icon = 'fas fa-cloud-rain';
+            if (condition.includes('snow')) icon = 'fas fa-snowflake';
+            if (condition.includes('storm')) icon = 'fas fa-bolt';
+            if (condition.includes('mist') || condition.includes('fog')) icon = 'fas fa-smog';
+            
+            document.getElementById('weather-icon').innerHTML = `<i class="${icon}"></i>`;
+            
+            // Show the weather section
+            document.getElementById('current-weather').style.display = 'block';
+        }
+        
+        function displayForecast(data) {
+            const forecastContainer = document.getElementById('forecast');
+            forecastContainer.innerHTML = '';
+            
+            const forecastDays = data.forecast.forecastday;
+            
+            forecastDays.forEach(day => {
+                const date = new Date(day.date);
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                
+                const condition = day.day.condition.text.toLowerCase();
+                let icon = 'fas fa-sun';
+                if (condition.includes('cloud')) icon = 'fas fa-cloud';
+                if (condition.includes('rain')) icon = 'fas fa-cloud-rain';
+                if (condition.includes('snow')) icon = 'fas fa-snowflake';
+                if (condition.includes('storm')) icon = 'fas fa-bolt';
+                if (condition.includes('mist') || condition.includes('fog')) icon = 'fas fa-smog';
+                
+                const forecastDayElement = document.createElement('div');
+                forecastDayElement.className = 'forecast-day';
+                forecastDayElement.innerHTML = `
+                    <div class="forecast-date">${dayName}</div>
+                    <div class="forecast-icon"><i class="${icon}"></i></div>
+                    <div class="forecast-temp">
+                        <span class="forecast-high">${Math.round(day.day.maxtemp_c)}°</span>
+                        <span class="forecast-low">${Math.round(day.day.mintemp_c)}°</span>
+                    </div>
+                `;
+                
+                forecastContainer.appendChild(forecastDayElement);
+            });
+        }
+        
+        // Social login buttons
+        document.querySelectorAll('.social-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                showToast('Social login would be implemented in a real application!', 'error');
+            });
+        });
+        
+        // Check if user is already logged in
+        if (currentUser) {
+            updateProfilePage();
+            document.querySelectorAll('.nav-link').forEach(nav => {
+                nav.classList.remove('active');
+            });
+            document.querySelector('[data-page="profile"]').classList.add('active');
+            
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('profile').classList.add('active');
+        }
+    </script>
+</body>
+</html>
